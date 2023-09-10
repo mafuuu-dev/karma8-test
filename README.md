@@ -49,7 +49,7 @@
 #### **Примечание:**
 
 - для адекватной работы я использовал **Throwable/Exception, PgSql**, поэтому код все таки содержит немного ООП.
-- среднее время заполнения таблицы users **~ 165 секунд**.
+- среднее время заполнения таблицы users ~ **165 секунд**.
 - ресурсы необходимые для поднятия **10 consumers - 2.5 cpus / 2.5 gb**.
 - при увеличении количества consumers, следует иметь в виду, что **каждый consumer может создать до 100 workers.**
 - **!!!DANGEROUS OPERATION: docker system prune!!!**: чтобы запустить заново: ```docker-compose stop && docker system prune && docker volume rm karma8-test_psql-data```.
