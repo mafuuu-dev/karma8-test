@@ -1,0 +1,71 @@
+version: '3.9'
+
+networks:
+  karma8-net:
+    driver: bridge
+
+volumes:
+  psql-data:
+
+x-default: &default
+  restart: on-failure
+  networks:
+    - karma8-net
+  logging:
+    driver: "json-file"
+    options:
+      max-file: "1"
+      max-size: "5m"
+      labels: "karma8-log"
+
+x-app: &app
+  <<: *default
+  build: .
+  depends_on:
+    - psql
+
+# avg time of generate fixtures: ~165 sec
+x-fixtures: &fixtures
+  <<: *default
+  shm_size: '1gb'
+  command: >
+    -c wal_level=minimal
+    -c max_wal_senders=0
+    -c max_wal_size=5GB
+    -c shared_buffers=512MB
+    
+x-service: &service
+  <<: *default
+  command: >
+    -N 1000
+
+services:
+  producer:
+    <<: *app
+#    command: supercronic /app/cron/crontab
+    command: php /app/handlers/producer.php
+  
+  consumer:
+    <<: *app
+    command: php /app/handlers/consumer.php
+    deploy:
+      mode: replicated
+      replicas: 10
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: '250mb'
+    
+  psql:
+    <<: *service
+#    <<: *fixtures
+    image: postgres:15.4-alpine3.18
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_DB: karma8
+      POSTGRES_USER: karma8
+      POSTGRES_PASSWORD: test
+    volumes:
+      - psql-data:/var/lib/postgresql/data
+      - ./docker/initdb.sql:/docker-entrypoint-initdb.d/init.sql

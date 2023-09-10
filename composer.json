@@ -1,0 +1,42 @@
+{
+  "type": "library",
+  "authors": [
+    {
+      "name": "Evgeniy Turmorezov",
+      "email": "evg.rz@yandex.ru",
+      "role": "System Architect",
+      "homepage": "https://spb.hh.ru/resume/1d264fc1ff01cde3f30039ed1f726639353873"
+    }
+  ],
+  "readme": "README.md",
+  "description": "Karma8 test",
+  "keywords": [
+    "karma8",
+    "test"
+  ],
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "config": {
+    "optimize-autoloader": true,
+    "preferred-install": "dist",
+    "sort-packages": true
+  },
+  "autoload": {
+    "files": [
+      "app/repositories/users.php",
+      "app/repositories/queue.php",
+      "app/services/consumer.php",
+      "app/services/producer.php",
+      "app/services/worker.php",
+      "app/tools/db.php",
+      "app/tools/email.php",
+      "app/tools/format.php",
+      "app/tools/process.php",
+      "app/tools/transaction.php"
+    ]
+  },
+  "require": {
+    "php": "^8.2",
+    "ext-pgsql": "*"
+  }
+}
