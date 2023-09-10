@@ -9,6 +9,7 @@ use PgSql\Connection;
 
 use function App\Repositories\Users\get_users_with_expiring_subscription;
 use function App\Repositories\Queue\enqueue_jobs;
+use function App\Tools\Db\handle;
 use function App\Tools\Transaction\transaction;
 
 use const App\Repositories\Queue\{QUEUE_CHECK_REQUIRED, QUEUE_CHECK_VALID};
@@ -31,7 +32,7 @@ function launch(): void
             break;
         }
 
-        $last_id = transaction(function (Connection $connection) use ($users) {
+        $last_id = handle(function (Connection $connection) use ($users) {
             enqueue_jobs($connection, enrich_up_to_jobs($users));
 
             print 'Enqueue ' . count($users) . " jobs\n";

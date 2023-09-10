@@ -91,7 +91,7 @@ function processes_handling(Connection $connection, array $processes): void
     while (count($processes) > 0) {
         $write = [];
         $except = [];
-        
+
         $keys = array_keys($processes);
         $stdouts = array_column(array_column($processes, 'pipes'), PIPE_STDOUT);
         $pipes = array_combine($keys, $stdouts);
@@ -109,11 +109,11 @@ function processes_handling(Connection $connection, array $processes): void
 
                 continue;
             }
-            
+
             if (in_array($output, [QUEUE_CHECK_VALID, QUEUE_CHECK_INVALID])) {
                 change_job_status($connection, $key, $output);
                 print "Process: $key => Job status changed to $output\n";
-                
+
                 continue;
             }
 
@@ -129,15 +129,15 @@ function close_process(Connection $connection, array $processes, string $key): v
 {
     fclose($processes[$key]['pipes'][PIPE_STDOUT]);
     $result = proc_close($processes[$key]['process']);
-    
+
     if ($result > PROCESS_SUCCESS) {
         print "Process $key ended with an error: $result\n";
 
         return;
     }
-    
+
     dequeue_job($connection, $key);
-    
+
     print "Process $key completed successfully\n"; 
 }
 

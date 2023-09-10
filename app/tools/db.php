@@ -6,6 +6,7 @@ namespace App\Tools\Db;
 
 use Exception;
 use PgSql\{Result, Connection};
+use Throwable;
 
 const DSN_MASK = 'host=%s port=%s dbname=%s user=%s password=%s';
 
@@ -54,6 +55,22 @@ function exec(Connection $connection, string $query, array $parameters = []): Re
 {
     $result = pg_query_params($connection, $query, $parameters) 
         or throw new Exception('An error has occurred: ' . pg_last_error($connection));
+
+    return $result;
+}
+
+/**
+ * @throws Throwable
+ */
+function handle(callable $handlers): mixed
+{
+    $connection = connect();
+
+    try {
+        $result = $handlers($connection);
+    } finally {
+        close($connection);
+    }
 
     return $result;
 }
