@@ -49,11 +49,11 @@ function launch(): void
 function enrich_up_to_jobs(array $users): array
 {
     return array_map(function ($user) {
-        $enriched_user = clone $user;
-        $enriched_user->user_id = $enriched_user->id;
-        $enriched_user->status = $enriched_user->is_valid ? QUEUE_CHECK_VALID : QUEUE_CHECK_REQUIRED;
-        unset($enriched_user->id);
+        $job = clone $user;
+        $job->user_id = $job->id;
+        $job->status = $job->is_valid ? QUEUE_CHECK_VALID : QUEUE_CHECK_REQUIRED;
+        unset($job->id);
 
-        return $enriched_user;
+        return $job;
     }, $users);
 }
