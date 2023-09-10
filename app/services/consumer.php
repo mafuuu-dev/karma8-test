@@ -70,7 +70,10 @@ function start_process(string $encoded_job): false|array
     $pipes = [];
     $process = proc_open(make_process_command($encoded_job), create_descriptors(), $pipes);
 
-    $result = ['process' => $process, 'pipes' => $pipes];
+    $result = [
+        'process' => $process, 
+        'pipes' => $pipes
+    ];
     if (!is_resource($process)) {
         return false;
     }
@@ -124,7 +127,7 @@ function processes_handling(Connection $connection, array $processes): void
  */
 function close_process(Connection $connection, array $processes, string $key): void
 {
-    fclose($processes[$key]['pipes'][1]);
+    fclose($processes[$key]['pipes'][PIPE_STDOUT]);
     $result = proc_close($processes[$key]['process']);
     
     if ($result > PROCESS_SUCCESS) {
