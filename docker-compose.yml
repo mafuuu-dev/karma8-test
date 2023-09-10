@@ -37,13 +37,13 @@ x-fixtures: &fixtures
 x-service: &service
   <<: *default
   command: >
-    -N 1000
+    -N 1020
 
 services:
   producer:
     <<: *app
-#    command: supercronic /app/cron/crontab
-    command: php /app/handlers/producer.php
+    command: supercronic /app/cron/crontab
+#    command: php /app/handlers/producer.php
   
   consumer:
     <<: *app
