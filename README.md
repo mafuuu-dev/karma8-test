@@ -40,8 +40,8 @@
 - выполняем: ```docker-compose up psql```
 - после того как docker-compose.yml:**psql** отработал завершаем процесс ```ctrl+c```
 - устанавливаем в docker-compose.yml:**psql** anchor: ```<<: *service```
-- устанавливаем в docker-compose.yml:**producer** command: ```command: php /app/src/producer.php```  
-- выполняем: ```docker-compose up producer```
+- устанавливаем в docker-compose.yml:**producer** command: ```command: php /app/handlers/producer.php```  
+- выполняем: ```docker-compose up --build producer```
 - устанавливаем в docker-compose.yml:**producer** command: ```command: supercronic /app/cron/crontab```
 - устанавливаем в docker-compose.yml:**consumer** необходимое количество реплик. по умолчанию: ```replicas: 10```
 - выполняем: ```docker-compose up -d && docker-compose logs -f```
