@@ -55,7 +55,6 @@ function create_processes(array $jobs): array
     $processes = [];
     foreach ($jobs as $job) {
         $process = start_process($job);
-
         if (!$process) {
             throw new Exception(process_output($job->id, 'Failed to start'));
         }
