@@ -39,11 +39,10 @@
 - устанавливаем в docker-compose.yml:**psql** anchor: ```<<: *fixtures```
 - выполняем: ```docker-compose up psql```
 - после того как docker-compose.yml:**psql** отработал завершаем процесс ```ctrl+c```
-- устанавливаем в docker-compose.yml:**psql** anchor: ```<<: *service```
+- устанавливаем в docker-compose.yml:**psql** anchor: ```<<: *default```
 - устанавливаем в docker-compose.yml:**producer** command: ```command: php /app/handlers/producer.php```  
-- выполняем: ```docker-compose up --build producer```
+- выполняем: ```docker-compose up producer```
 - устанавливаем в docker-compose.yml:**producer** command: ```command: supercronic /app/cron/crontab```
-- устанавливаем в docker-compose.yml:**consumer** необходимое количество реплик. по умолчанию: ```replicas: 10```
 - выполняем: ```docker-compose up -d && docker-compose logs -f```
 
 #### **Примечание:**
@@ -51,5 +50,5 @@
 - для адекватной работы я использовал **Throwable/Exception, PgSql**, поэтому код все таки содержит немного ООП.
 - среднее время заполнения таблицы users ~ **165 секунд**.
 - ресурсы необходимые для поднятия **10 consumers - 2.5 cpus / 2.5 gb**.
-- при увеличении количества consumers, следует иметь в виду, что **каждый consumer может создать до 100 workers.**
+- при увеличении количества **consumers** (по умолчанию: ```replicas: 10```), следует иметь в виду, что **каждый consumer может создать до 100 workers, а следовательно увеличится потребление ресурсов**.
 - **!!!DANGEROUS OPERATION: docker system prune!!!**: чтобы запустить заново: ```docker-compose stop && docker system prune && docker volume rm karma8-test_psql-data```.

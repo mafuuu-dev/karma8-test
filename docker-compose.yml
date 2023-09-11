@@ -33,18 +33,13 @@ x-fixtures: &fixtures
     -c max_wal_senders=0
     -c max_wal_size=5GB
     -c shared_buffers=512MB
-    
-x-service: &service
-  <<: *default
-  command: >
-    -N 1020
 
 services:
   producer:
     <<: *app
     command: supercronic /app/cron/crontab
 #    command: php /app/handlers/producer.php
-  
+
   consumer:
     <<: *app
     command: php /app/handlers/consumer.php
@@ -57,7 +52,7 @@ services:
           memory: '250mb'
     
   psql:
-    <<: *service
+    <<: *default
 #    <<: *fixtures
     image: postgres:15.4-alpine3.18
     ports:

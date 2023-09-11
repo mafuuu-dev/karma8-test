@@ -31,6 +31,7 @@
       "app/tools/db.php",
       "app/tools/email.php",
       "app/tools/format.php",
+      "app/tools/message.php",
       "app/tools/process.php",
       "app/tools/transaction.php"
     ]

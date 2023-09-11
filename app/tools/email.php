@@ -4,23 +4,35 @@ declare(strict_types=1);
 
 namespace App\Tools\Email;
 
+use Throwable;
+
+use function App\Tools\Message\make_message;
+
 const SUBSCRIPTION_NOTIFY_MESSAGE_MASK = '%s, your subscription is expiring soon!';
 const DEFAULT_SENDER = 'subscription@karma8.io';
 
+/**
+ * @throws Throwable
+ */
 function check_email(string $email): int
 {
-    $duration = rand(1, 60); 
+    $duration = rand(1, 60);
     $result = rand(0, 1);
-    print("Check email => Duration: $duration sec; Result: $result;\n");
+
+    print make_message("check_email(duration: $duration, result: $result)");
 
     sleep($duration);
     return $result;
 }
 
+/**
+ * @throws Throwable
+ */
 function send_email(string $from, string $to, string $text): void 
 {
     $duration = rand(1, 10);
-    print("Send email => Duration: $duration sec;\n");
+
+    print make_message("send_email(duration: $duration)");
     
     sleep($duration);
 }
