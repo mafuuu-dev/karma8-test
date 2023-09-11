@@ -23,10 +23,10 @@ const RECORDS_LIMIT = 100;
 function get_jobs(Connection $connection): array
 {
     $query = '
-        SELECT * FROM queue WHERE sent_at <= extract(EPOCH FROM now()) 
-        ORDER BY sent_at FOR UPDATE SKIP LOCKED LIMIT $1
+        SELECT * FROM queue WHERE sent_at <= extract(EPOCH FROM now()) AND status != $1
+        ORDER BY sent_at FOR UPDATE SKIP LOCKED LIMIT $2
     ';
-    $result = exec($connection, $query, [RECORDS_LIMIT]);
+    $result = exec($connection, $query, [QUEUE_CHECK_INVALID, RECORDS_LIMIT]);
 
     $jobs = [];
     while ($job = fetch($result)) {
