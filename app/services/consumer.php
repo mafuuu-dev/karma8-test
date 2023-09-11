@@ -74,16 +74,17 @@ function start_process(object $job): false|array
 {
     $pipes = [];
     $encoded_job = json_encode(value: $job, flags: JSON_THROW_ON_ERROR);
+
     $process = proc_open(make_process_command($encoded_job), create_descriptors(), $pipes);
+    if (!is_resource($process)) {
+        return false;
+    }
 
     $result = [
         'process' => $process,
         'pipes' => $pipes,
         'job' => $job,
     ];
-    if (!is_resource($process)) {
-        return false;
-    }
 
     stream_set_blocking($result['pipes'][PIPE_STDOUT], false);
 
@@ -98,10 +99,10 @@ function processes_handling(Connection $connection, array $processes): void
     while (count($processes) > 0) {
         $write = [];
         $except = [];
-        
+
         $keys = array_keys($processes);
         $stdouts = array_column(array_column($processes, 'pipes'), PIPE_STDOUT);
-        $pipes = array_combine($keys, $stdouts);;
+        $pipes = array_combine($keys, $stdouts);
 
         if (!stream_select($pipes, $write, $except, null)) {
             continue;
