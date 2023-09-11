@@ -73,9 +73,12 @@ function create_processes(array $jobs): array
  */
 function start_process(object $job): false|array
 {
-    $pipes = [];
-    $encoded_job = json_encode(value: $job, flags: JSON_THROW_ON_ERROR);
+    $encoded_job = json_encode(value: $job);
+    if (!$encoded_job) {
+        return false;
+    }
 
+    $pipes = [];
     $process = proc_open(make_process_command($encoded_job), create_descriptors(), $pipes);
     if (!is_resource($process)) {
         return false;
@@ -112,7 +115,7 @@ function processes_handling(Connection $connection, array $processes): void
         foreach ($pipes as $key => $stdout) {
             $output = fgets($stdout);
             if (!$output) {
-                close_process($connection, $processes, $key);
+                close_process($connection, $processes[$key]);
                 unset($processes[$key]);
 
                 continue;
@@ -120,7 +123,7 @@ function processes_handling(Connection $connection, array $processes): void
 
             $message = parse_message($output);
             if ($message->type === TYPE_ACTION) {
-                job_handling($connection, $processes, $key, $message->data);
+                job_handling($connection, $processes[$key]['job'], $message->data);
 
                 continue;
             }
@@ -133,31 +136,31 @@ function processes_handling(Connection $connection, array $processes): void
 /**
  * @throws Throwable
  */
-function close_process(Connection $connection, array $processes, string $key): void
+function close_process(Connection $connection, array $process): void
 {
-    fclose($processes[$key]['pipes'][PIPE_STDOUT]);
-    $result = proc_close($processes[$key]['process']);
+    fclose($process['pipes'][PIPE_STDOUT]);
+    $result = proc_close($process['process']);
 
     if ($result > PROCESS_SUCCESS) {
-        process_output($key, "Ended with an error: $result");
+        process_output($process['job']->id, "Ended with an error: $result");
 
         return;
     }
 
-    dequeue_job($connection, $key);
-    
-    process_output($key, 'Completed successfully');
+    dequeue_job($connection, $process['job']->id);
+
+    process_output($process['job']->id, 'Completed successfully');
 }
 
 /**
  * @throws Throwable
  */
-function job_handling(Connection $connection, array $processes, string $key, string $status): void
+function job_handling(Connection $connection, object $job, string $status): void
 {
-    change_job_status($connection, $key, $status);
-    mark_as_checked($connection, $processes[$key]['job']->user_id, $status === QUEUE_CHECK_VALID);
+    change_job_status($connection, $job->id, $status);
+    mark_as_checked($connection, $job->user_id, $status === QUEUE_CHECK_VALID);
 
-    process_output($key, "Status changed to $status");
+    process_output($job->id, "Status changed to $status");
 }
 
 function process_output(string $key, string $message): void

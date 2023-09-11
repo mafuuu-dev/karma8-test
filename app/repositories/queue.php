@@ -24,7 +24,7 @@ function get_jobs(Connection $connection): array
 {
     $query = '
         SELECT * FROM queue WHERE sent_at <= extract(EPOCH FROM now()) AND status != $1
-        ORDER BY sent_at FOR UPDATE SKIP LOCKED LIMIT $2
+        ORDER BY sent_at, id FOR UPDATE SKIP LOCKED LIMIT $2
     ';
     $result = exec($connection, $query, [QUEUE_CHECK_INVALID, RECORDS_LIMIT]);
 
