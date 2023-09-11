@@ -57,11 +57,12 @@ function create_processes(array $jobs): array
         $process = start_process($job);
 
         if (!$process) {
-            throw new Exception("Process: $job->id => Failed to start");
+            throw new Exception(process_output($job->id, 'Failed to start'));
         }
 
         $processes[$job->id] = $process;
-        print "Process: $job->id => Is running\n";
+        
+        print process_output($job->id, 'Is running');
     }
 
     return $processes;
@@ -123,7 +124,7 @@ function processes_handling(Connection $connection, array $processes): void
                 continue;
             }
 
-            print "Process: $key => $message->data\n";
+            print process_output($key, $message->data);
         }
     }
 }
@@ -137,14 +138,14 @@ function close_process(Connection $connection, array $processes, string $key): v
     $result = proc_close($processes[$key]['process']);
 
     if ($result > PROCESS_SUCCESS) {
-        print "Process: $key => Ended with an error: $result\n";
+        print process_output($key, "Ended with an error: $result");
 
         return;
     }
 
     dequeue_job($connection, $key);
-
-    print "Process: $key => Completed successfully\n"; 
+    
+    print process_output($key, 'Completed successfully');
 }
 
 /**
@@ -154,8 +155,13 @@ function job_handling(Connection $connection, array $processes, string $key, str
 {
     change_job_status($connection, $key, $status);
     mark_as_checked($connection, $processes[$key]['job']->user_id, $status === QUEUE_CHECK_VALID);
+    
+    print process_output($key, "Job status changed to $status");
+}
 
-    print "Process: $key => Job status changed to $status\n";
+function process_output(string $key, string $message): string
+{
+    return "Process $key => $message\n";
 }
 
 function get_attempts(bool $is_processed, int $attempts): int
