@@ -52,7 +52,7 @@ function process_job(object $job): void
 
     if ($job->status === QUEUE_CHECK_REQUIRED) {
         $job->status = check_email($job->email) ? QUEUE_CHECK_VALID : QUEUE_CHECK_INVALID;
-        
+
         print make_message($job->status, TYPE_ACTION);
     }
 
