@@ -20,7 +20,7 @@ use const App\Tools\Process\{PROCESS_SUCCESS, PROCESS_SKIPPED, PROCESS_ERROR};
 function launch(?string $encoded_job): int
 {
     if (is_null($encoded_job)) {
-        print make_message('Skipped');
+        make_message('Skipped');
 
         return PROCESS_SKIPPED;
     }
@@ -29,7 +29,7 @@ function launch(?string $encoded_job): int
         $job = json_decode(json: $encoded_job, flags: JSON_THROW_ON_ERROR);
         process_job($job);        
     } catch (Throwable $e) {
-        print make_message($e->getMessage());
+        make_message($e->getMessage());
 
         return PROCESS_ERROR;
     }
@@ -42,10 +42,10 @@ function launch(?string $encoded_job): int
  */
 function process_job(object $job): void
 {
-    print make_message('Processing');
+    make_message('Processing');
     
     if ($job->status === QUEUE_CHECK_INVALID) {
-        print make_message('Invalid');
+        make_message('Invalid');
 
         return;
     }
@@ -53,12 +53,12 @@ function process_job(object $job): void
     if ($job->status === QUEUE_CHECK_REQUIRED) {
         $job->status = check_email($job->email) ? QUEUE_CHECK_VALID : QUEUE_CHECK_INVALID;
 
-        print make_message($job->status, TYPE_ACTION);
+        make_message($job->status, TYPE_ACTION);
     }
 
     if ($job->status === QUEUE_CHECK_VALID) {
         send_email(DEFAULT_SENDER, $job->email, make_subscription_notify_message($job->username));
     }
     
-    print make_message('Processed');
+    make_message('Processed');
 }

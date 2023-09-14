@@ -12,9 +12,9 @@ const TYPE_ACTION = 'action';
 /**
  * @throws Throwable
  */
-function make_message(string $data, string $type = TYPE_INFO): string
+function make_message(string $data, string $type = TYPE_INFO): void
 {
-    return json_encode(value: ['type' => $type, 'data' => $data], flags: JSON_THROW_ON_ERROR) . PHP_EOL;
+    print json_encode(value: ['type' => $type, 'data' => $data], flags: JSON_THROW_ON_ERROR) . PHP_EOL;
 }
 
 /**

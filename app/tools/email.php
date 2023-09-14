@@ -19,7 +19,7 @@ function check_email(string $email): int
     $duration = rand(1, 60);
     $result = rand(0, 1);
 
-    print make_message("check_email(duration: $duration, result: $result)");
+    make_message("check_email(duration: $duration, result: $result)");
 
     sleep($duration);
     return $result;
@@ -32,7 +32,7 @@ function send_email(string $from, string $to, string $text): void
 {
     $duration = rand(1, 10);
 
-    print make_message("send_email(duration: $duration)");
+    make_message("send_email(duration: $duration)");
     
     sleep($duration);
 }
